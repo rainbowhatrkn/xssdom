@@ -8,7 +8,6 @@ import os
 import subprocess
 import multiprocessing
 
-# Function to get URLs with parameters
 def get_urls_with_parameters(domain):
     try:
         command = f"gau {domain}"
@@ -26,11 +25,10 @@ def get_urls_with_parameters(domain):
         print(f"{Fore.RED}Error retrieving URLs: {e}")
         return []
 
-# Function to test payload
 def test_payload(args):
-    url, payload, result_file, proxy = args
+    url, payload, result_file = args
     try:
-        response = requests.get(url, proxies=proxy)
+        response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
 
         if payload_in_html(payload, str(soup)):
@@ -43,11 +41,9 @@ def test_payload(args):
     except Exception as e:
         pass
 
-# Function to check payload in HTML content
 def payload_in_html(payload, html_content):
     return payload in html_content
 
-# Function to read domain list from file
 def read_domain_list(file_path, encoding='utf-8'):
     try:
         with open(file_path, 'r', encoding=encoding) as file:
@@ -64,10 +60,6 @@ def read_domain_list(file_path, encoding='utf-8'):
 if __name__ == "__main__":
     file_path = questionary.text("Entrez le chemin du fichier de domaines:").ask()
     encoding = questionary.text("Entrez l'encodage du fichier (ex: utf-8, iso-8859-1):").ask()
-
-    # Prompt user for proxy input, defaulting to None
-    proxy_input = questionary.text("Entrez l'adresse du proxy (laissez vide pour ne pas utiliser de proxy):", default="").ask()
-    proxy = {'http': proxy_input, 'https': proxy_input} if proxy_input else None
 
     domain_list = read_domain_list(file_path, encoding)
 
@@ -88,7 +80,7 @@ if __name__ == "__main__":
                 for url in urls_with_parameters:
                     for payload in payloads:
                         payload = payload.strip('\n')
-                        args_list.append((url, payload, result_file, proxy))
+                        args_list.append((url, payload, result_file))
 
             pool.map(test_payload, args_list)
 

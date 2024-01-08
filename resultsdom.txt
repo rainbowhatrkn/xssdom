@@ -1,0 +1,4 @@
+[ XSS Found ✓ ] http://www.elbarakashop.com:80/fiche.php?lg=fr&id=&id=669 - Payload: <html xmlns="http://www.w3.org/1999/xhtml">
+[ XSS Found ✓ ] http://www.elbarakashop.com:80/fiche.php?lg=fr&id=&id=669 - Payload: <!--
+[ XSS Found ✓ ] http://www.elbarakashop.com:80/fiche.php?lg=fr&id=&id=669 - Payload: <br>
+[ XSS Found ✓ ] http://www.elbarakashop.com:80/fiche.php?lg=fr&id=&id=669 - Payload: </form>
