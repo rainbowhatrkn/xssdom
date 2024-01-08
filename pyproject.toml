@@ -10,6 +10,8 @@ colorama = "^0.4.6"
 questionary = "^2.0.1"
 beautifulsoup4 = "^4.12.2"
 requests = "^2.31.0"
+selenium = "^4.16.0"
+stem = "^1.8.2"
 
 [tool.pyright]
 # https://github.com/microsoft/pyright/blob/main/docs/configuration.md

@@ -7,6 +7,8 @@ import questionary
 import os
 import subprocess
 import multiprocessing
+import socks
+import stem.process
 
 # Function to get URLs with parameters
 def get_urls_with_parameters(domain):
@@ -61,13 +63,38 @@ def read_domain_list(file_path, encoding='utf-8'):
         print(f"{Fore.RED}Le fichier spécifié n'a pas été trouvé.")
         return None
 
+# Function to start Tor process
+def start_tor():
+    return stem.process.launch_tor_with_config(
+        config={
+            'SocksPort': str(9050),
+            'ControlPort': str(9051),
+            'Log': 'notice stdout',
+        },
+    )
+
+# Function to stop Tor process
+def stop_tor(tor_process):
+    tor_process.kill()
+
 if __name__ == "__main__":
     file_path = questionary.text("Entrez le chemin du fichier de domaines:").ask()
     encoding = questionary.text("Entrez l'encodage du fichier (ex: utf-8, iso-8859-1):").ask()
 
-    # Prompt user for proxy input, defaulting to None
-    proxy_input = questionary.text("Entrez l'adresse du proxy (laissez vide pour ne pas utiliser de proxy):", default="").ask()
-    proxy = {'http': proxy_input, 'https': proxy_input} if proxy_input else None
+    # Prompt user for proxy input
+    proxy_choice = questionary.select(
+        "Choisissez l'option de proxy:",
+        choices=["Aucun proxy", "Proxy Tor", "Proxy personnalisé"],
+    ).ask()
+
+    if proxy_choice == "Proxy personnalisé":
+        proxy_input = questionary.text("Entrez l'adresse du proxy:").ask()
+        proxy = {'http': proxy_input, 'https': proxy_input}
+    elif proxy_choice == "Proxy Tor":
+        tor_process = start_tor()
+        proxy = {'http': 'socks5://127.0.0.1:9050', 'https': 'socks5://127.0.0.1:9050'}
+    else:
+        proxy = None
 
     domain_list = read_domain_list(file_path, encoding)
 
@@ -93,6 +120,10 @@ if __name__ == "__main__":
             pool.map(test_payload, args_list)
 
         print(f"{Fore.CYAN}Results saved to {result_file}{Fore.RESET}")
+
+        # Stop Tor if it was started
+        if proxy_choice == "Proxy Tor":
+            stop_tor(tor_process)
 
         # Add a wait to prevent the script from terminating abruptly
         input("Press Enter to exit...")
