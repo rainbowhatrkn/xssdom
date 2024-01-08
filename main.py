@@ -103,7 +103,7 @@ if __name__ == "__main__":
         result_file = 'resultsdom.txt'
         payloads = open(payloads_file, 'r').readlines()
 
-        with ThreadPoolExecutor(max_workers=10) as executor, multiprocessing.Pool() as pool:
+        with ThreadPoolExecutor(max_workers=50) as executor, multiprocessing.Pool() as pool:
             args_list = []
             for domain in domain_list:
                 print(f"{Fore.CYAN}Processing domain: {domain}{Fore.RESET}")
