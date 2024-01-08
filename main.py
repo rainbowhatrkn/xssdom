@@ -89,10 +89,10 @@ if __name__ == "__main__":
 
     if proxy_choice == "Proxy personnalisé":
         proxy_input = questionary.text("Entrez l'adresse du proxy:").ask()
-        proxy = {'http': proxy_input, 'https': proxy_input}
+        proxy = {'http': f'http://{proxy_input}', 'https': f'https://{proxy_input}'}
     elif proxy_choice == "Proxy Tor":
         tor_process = start_tor()
-        proxy = {'http': 'socks5://127.0.0.1:9050', 'https': 'socks5://127.0.0.1:9050'}
+        proxy = {'http': 'http://127.0.0.1:9050', 'https': 'https://127.0.0.1:9050'}
     else:
         proxy = None
 
